@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+
+  aiqfome-laravel:
+    build:
+      dockerfile: php.Dockerfile
+    container_name: aiqfome-laravel
+    volumes:
+      - ../:/var/www
+      - ./apache2/sites-available/:/etc/apache2/sites-available/
+      - ./sistema/etc/supervisor/:/etc/supervisor/conf.d/
+    ports:
+      - "8080:80"
+    networks:
+      aiqfome:
+        ipv4_address: 173.0.0.2
+        aliases:
+          - laravel-aiqfome
+    restart: always
+
+  aiqfome-postgres:
+    container_name: aiqfome-postgres
+    build:
+      dockerfile: postgres.Dockerfile
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER:-aiqfome}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-Pg102030@}"
+      POSTGRES_DB: "${POSTGRES_DB:-aiqfome}"
+    volumes:
+      - ./db/postgres-data:/var/lib/postgresql/data
+    networks:
+      aiqfome:
+        ipv4_address: 173.0.0.3
+        aliases:
+          - aiqfome-postgres
+    restart: always
+
+  aiqfome-redis:
+    image: redis:7
+    container_name: aiqfome-redis
+    command: redis-server --requirepass Redis2019!
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      timeout: 3s
+      retries: 3
+    networks:
+      aiqfome:
+        ipv4_address: 173.0.0.4
+        aliases:
+          - aiqfome-redis
+    restart: always
+
+networks:
+  aiqfome:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 173.0.0.0/24
+          gateway: 173.0.0.1
