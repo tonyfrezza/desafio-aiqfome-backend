@@ -44,6 +44,7 @@ cd desafio-aiqfome-backend
 ### 2. Inicializando os Containers Docker
 Acesse a pasta `docker` do projeto e execute:
 ```bash
+cd docker
 docker compose up -d
 ```
 (podem ser requeridas permissões de super usuário, dependendo da instalação do seu docker) 
@@ -56,6 +57,7 @@ Isso iniciará os containers:
 ### 3. Configurando o Ambiente Laravel
 No diretório raiz do projeto, copie o arquivo `.env.example` para `.env`:
 ```bash
+cd ..
 cp .env.example .env
 ```
 
